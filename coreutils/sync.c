@@ -44,59 +44,8 @@
 int sync_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int sync_main(int argc UNUSED_PARAM, char **argv IF_NOT_DESKTOP(UNUSED_PARAM))
 {
-#if !ENABLE_FEATURE_SYNC_FANCY
 	/* coreutils-6.9 compat */
 	bb_warn_ignoring_args(argv[1]);
 	sync();
 	return EXIT_SUCCESS;
-#else
-	unsigned opts;
-	int ret = EXIT_SUCCESS;
-
-	enum {
-		OPT_DATASYNC = (1 << 0),
-		OPT_SYNCFS   = (1 << 1),
-	};
-
-	opt_complementary = "d--f:f--d";
-	opts = getopt32(argv, "df");
-	argv += optind;
-
-	/* Handle the no-argument case. */
-	if (!argv[0])
-		sync();
-
-	while (*argv) {
-		int fd = open_or_warn(*argv, O_RDONLY);
-
-		if (fd < 0) {
-			ret = EXIT_FAILURE;
-			goto next;
-		}
-		if (opts & OPT_DATASYNC) {
-			if (fdatasync(fd))
-				goto err;
-			goto do_close;
-		}
-		if (opts & OPT_SYNCFS) {
-			/*
-			 * syncfs is documented to only fail with EBADF,
-			 * which can't happen here. So, no error checks.
-			 */
-			syncfs(fd);
-			goto do_close;
-		}
-		if (fsync(fd)) {
- err:
-			bb_simple_perror_msg(*argv);
-			ret = EXIT_FAILURE;
-		}
- do_close:
-		close(fd);
- next:
-		++argv;
-	}
-
-	return ret;
-#endif
 }

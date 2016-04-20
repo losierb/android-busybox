@@ -140,6 +140,7 @@ findutils/grep.c
 findutils/xargs.c
 init/halt.c
 init/mesg.c
+libbb/android.c
 libbb/appletlib.c
 libbb/ask_confirmation.c
 libbb/auto_string.c
@@ -375,7 +376,6 @@ shell/ash_ptr_hack.c
 shell/math.c
 shell/random.c
 shell/shell_common.c
-sysklogd/syslogd_and_logger.c
 util-linux/blkdiscard.c
 util-linux/blkid.c
 util-linux/blockdev.c
@@ -395,7 +395,6 @@ util-linux/lsusb.c
 util-linux/mkfs_ext2.c
 util-linux/mkfs_vfat.c
 util-linux/mkswap.c
-util-linux/mount.c
 util-linux/nsenter.c
 util-linux/pivot_root.c
 util-linux/rdate.c

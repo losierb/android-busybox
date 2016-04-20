@@ -83,7 +83,6 @@
 /bin/ash
 /bin/sh
 /bin/bash
-/sbin/syslogd
 /bin/blkdiscard
 /sbin/blockdev
 /bin/fatattr
@@ -186,7 +185,6 @@
 /sbin/mkfs.vfat
 /bin/mknod
 /sbin/mkswap
-/bin/mount
 /bin/mountpoint
 /bin/mv
 /bin/nc

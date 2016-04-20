@@ -36,14 +36,13 @@
 int logname_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int logname_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
-	char buf[64];
-
+	char *buf;
 	if (argv[1]) {
 		bb_show_usage();
 	}
 
 	/* Using _r function - avoid pulling in static buffer from libc */
-	if (getlogin_r(buf, sizeof(buf)) == 0) {
+	if (buf = getlogin()) {
 		puts(buf);
 		return fflush_all();
 	}

@@ -27,6 +27,17 @@
 
 #include <resolv.h>
 #include "libbb.h"
+#ifdef ANDROID
+# include <netinet/in.h>
+# if ENABLE_FEATURE_IPV6
+#  include <netinet/in6.h>
+# endif
+# define ANDROID_CHANGES
+#  include <arpa/nameser.h>
+#  include <dns/include/resolv_private.h>
+#  include <dns/resolv/res_private.h>
+#endif
+#define EXT(res) ((&res)->_u._ext)
 
 /*
  * I'm only implementing non-interactive mode;
@@ -120,7 +131,8 @@ static void server_print(void)
 	struct sockaddr *sa;
 
 #if ENABLE_FEATURE_IPV6
-	sa = (struct sockaddr*)_res._u._ext.nsaddrs[0];
+	if (EXT(_res).ext)
+		sa = (struct sockaddr*) &EXT(_res).ext->nsaddrs[0];
 	if (!sa)
 #endif
 		sa = (struct sockaddr*)&_res.nsaddr_list[0];
@@ -155,13 +167,11 @@ static void set_default_dns(const char *server)
 	 * maybe I misunderstand how to make glibc use IPv6 addr?
 	 * (uclibc 0.9.31+ should work) */
 	if (lsa->u.sa.sa_family == AF_INET6) {
-		// glibc neither SEGVs nor sends any dgrams with this
-		// (strace shows no socket ops):
-		//_res.nscount = 0;
-		_res._u._ext.nscount = 1;
-		/* store a pointer to part of malloc'ed lsa */
-		_res._u._ext.nsaddrs[0] = &lsa->u.sin6;
-		/* must not free(lsa)! */
+		if (EXT(_res).ext) {
+			EXT(_res).nscount = 1;
+			memcpy(&EXT(_res).ext->nsaddrs[0].sin6, &lsa->u.sin6,
+				sizeof(struct sockaddr_in6));
+		}
 	}
 #endif
 }
@@ -180,6 +190,8 @@ int nslookup_main(int argc, char **argv)
 	/* initialize DNS structure _res used in printing the default
 	 * name server and in the explicit name server option feature. */
 	res_init();
+	res_ninit(&_res);
+
 	/* rfc2133 says this enables IPv6 lookups */
 	/* (but it also says "may be enabled in /etc/resolv.conf") */
 	/*_res.options |= RES_USE_INET6;*/

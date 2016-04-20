@@ -18,20 +18,21 @@ BUSYBOX_C_INCLUDES = \
 	$(BB_PATH)/include $(BB_PATH)/libbb \
 	$(BB_PATH)/android/include \
 	bionic/libc/private \
-	bionic/libm/include \
 	bionic/libc \
-	bionic/libm \
-	external/libselinux/include \
+	bionic/libm/include \
+	bionic/libc/include \
+	bionic/libm/include \
+	external/selinux/libselinux/include \
 	external/selinux/libsepol/include \
-	bionic/libc/kernel/uapi
 
 BUSYBOX_CFLAGS = \
 	-Werror=implicit -Wno-clobbered \
 	-DNDEBUG \
 	-DANDROID \
+	-D__USE_GNU \
 	-fno-strict-aliasing \
 	-fno-builtin-stpcpy \
-	-include $(BB_PATH)/include/autoconf.h \
+	-include $(BB_PATH)/android/include/autoconf.h \
 	-D'CONFIG_DEFAULT_MODULES_DIR="$(KERNEL_MODULES_DIR)"' \
 	-D'BB_VER="$(BB_VER)"' -DBB_BT=AUTOCONF_TIMESTAMP
 
@@ -42,10 +43,10 @@ LOCAL_C_INCLUDES := $(BUSYBOX_C_INCLUDES)
 LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
 LOCAL_ASFLAGS := $(BUSYBOX_AFLAGS)
 LOCAL_MODULE := busybox
-LOCAL_MODULE_TAGS := eng debug
+LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
-LOCAL_SHARED_LIBRARIES := libc libcutils libm
-LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_full)
+LOCAL_SHARED_LIBRARIES := libc libcutils libm libselinux
+LOCAL_STATIC_LIBRARIES := libsepol
 LOCAL_CLANG := false
 include $(BUILD_EXECUTABLE)
 

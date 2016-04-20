@@ -21,6 +21,7 @@
 #include <setjmp.h>
 #include <signal.h>
 #include <paths.h>
+#include <strings.h>
 #if defined __UCLIBC__ /* TODO: and glibc? */
 /* use inlined versions of these: */
 # define sigfillset(s)    __sigfillset(s)
@@ -81,8 +82,14 @@
 #if ENABLE_SELINUX
 # include <selinux/selinux.h>
 # include <selinux/context.h>
+# include <selinux/label.h>
+#ifdef __BIONIC__
+# include <selinux/android.h>
+# include <sepol/policydb/flask.h>
+#else
 # include <selinux/flask.h>
 # include <selinux/av_permissions.h>
+#endif
 #endif
 #if ENABLE_FEATURE_UTMP
 # if defined __UCLIBC__ && ( \
@@ -165,6 +172,13 @@
 # define XTABS TAB3
 #endif
 
+#if defined(ANDROID) || defined(__ANDROID__)
+typedef struct timex timex_t;
+int sethostname(const char *name, size_t len);
+int pivot_root(const char *new_root, const char *put_old);
+int res_init(void);
+int adjtimex(timex_t *buf);
+#endif
 
 /* Some libc's forget to declare these, do it ourself */
 

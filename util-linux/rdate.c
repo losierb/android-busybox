@@ -16,6 +16,7 @@
 //usage:     "\n	-p	Print time"
 
 #include "libbb.h"
+#include "android.h"
 
 enum { RFC_868_BIAS = 2208988800UL };
 

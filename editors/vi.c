@@ -183,10 +183,6 @@
 //usage:     "\n	-H	List available features"
 
 #include "libbb.h"
-/* Should be after libbb.h: on some systems regex.h needs sys/types.h: */
-#if ENABLE_FEATURE_VI_REGEX_SEARCH
-# include <regex.h>
-#endif
 
 /* the CRASHME code is unmaintained, and doesn't currently build */
 #define ENABLE_FEATURE_VI_CRASHME 0
@@ -1878,65 +1874,7 @@ static char *new_screen(int ro, int co)
 }
 
 #if ENABLE_FEATURE_VI_SEARCH
-
-# if ENABLE_FEATURE_VI_REGEX_SEARCH
-
-// search for pattern starting at p
-static char *char_search(char *p, const char *pat, int dir, int range)
-{
-	struct re_pattern_buffer preg;
-	const char *err;
-	char *q;
-	int i;
-	int size;
-
-	re_syntax_options = RE_SYNTAX_POSIX_EXTENDED;
-	if (ignorecase)
-		re_syntax_options = RE_SYNTAX_POSIX_EXTENDED | RE_ICASE;
-
-	memset(&preg, 0, sizeof(preg));
-	err = re_compile_pattern(pat, strlen(pat), &preg);
-	if (err != NULL) {
-		status_line_bold("bad search pattern '%s': %s", pat, err);
-		return p;
-	}
-
-	// assume a LIMITED forward search
-	q = end - 1;
-	if (dir == BACK)
-		q = text;
-	// RANGE could be negative if we are searching backwards
-	range = q - p;
-	q = p;
-	size = range;
-	if (range < 0) {
-		size = -size;
-		q = p - size;
-		if (q < text)
-			q = text;
-	}
-	// search for the compiled pattern, preg, in p[]
-	// range < 0: search backward
-	// range > 0: search forward
-	// 0 < start < size
-	// re_search() < 0: not found or error
-	// re_search() >= 0: index of found pattern
-	//           struct pattern   char     int   int    int    struct reg
-	// re_search(*pattern_buffer, *string, size, start, range, *regs)
-	i = re_search(&preg, q, size, /*start:*/ 0, range, /*struct re_registers*:*/ NULL);
-	regfree(&preg);
-	if (i < 0)
-		return NULL;
-	if (dir == FORWARD)
-		p = p + i;
-	else
-		p = p - i;
-	return p;
-}
-
-# else
-
-#  if ENABLE_FEATURE_VI_SETOPTS
+# if ENABLE_FEATURE_VI_SETOPTS
 static int mycmp(const char *s1, const char *s2, int len)
 {
 	if (ignorecase) {
@@ -1944,9 +1882,9 @@ static int mycmp(const char *s1, const char *s2, int len)
 	}
 	return strncmp(s1, s2, len);
 }
-#  else
-#   define mycmp strncmp
-#  endif
+# else
+#  define mycmp strncmp
+# endif
 
 static char *char_search(char *p, const char *pat, int dir, int range)
 {
@@ -1976,8 +1914,6 @@ static char *char_search(char *p, const char *pat, int dir, int range)
 	// pattern not found
 	return NULL;
 }
-
-# endif
 
 #endif /* FEATURE_VI_SEARCH */
 

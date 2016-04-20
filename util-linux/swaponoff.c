@@ -28,10 +28,9 @@
 //usage:     "\n	-a	Stop swapping on all swap devices"
 
 #include "libbb.h"
+#include "android.h"
 #include <mntent.h>
-#ifndef __BIONIC__
-# include <sys/swap.h>
-#endif
+#include <sys/swap.h>
 
 #if ENABLE_FEATURE_MOUNT_LABEL
 # include "volume_id.h"

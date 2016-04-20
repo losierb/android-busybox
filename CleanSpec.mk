@@ -50,16 +50,6 @@ $(call add-clean-step, rm -rf $(PRODUCT_OUT)/obj/UTILITY_EXECUTABLES/static_busy
 
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/obj/busybox)
 
-# remains from old build system */
-$(call add-clean-step, rm -f external/busybox/include/bbconfigopts.h)
-$(call add-clean-step, rm -f external/busybox/include/autoconf.h)
-$(call add-clean-step, rm -f external/busybox/include/applet_tables.h)
-$(call add-clean-step, rm -f external/busybox/include/applets.h)
-$(call add-clean-step, rm -f external/busybox/.config)
-
-# force prepare
-$(call add-clean-step, touch external/busybox/busybox-minimal.config)
-$(call add-clean-step, touch external/busybox/busybox-full.config)
 
 # ************************************************
 # NEWER CLEAN STEPS MUST BE AT THE END OF THE LIST

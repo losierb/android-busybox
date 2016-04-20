@@ -138,6 +138,7 @@
 //usage:       "Wed Apr 12 18:52:41 MDT 2000\n"
 
 #include "libbb.h"
+#include "android.h"
 #if ENABLE_FEATURE_DATE_NANO
 # include <sys/syscall.h>
 #endif

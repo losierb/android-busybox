@@ -194,6 +194,8 @@ extern const uint8_t dhcp_option_lengths[] ALIGN1;
 
 unsigned FAST_FUNC udhcp_option_idx(const char *name);
 
+struct ether_addr *ether_aton_r (const char *asc, struct ether_addr * addr);
+
 uint8_t *udhcp_get_option(struct dhcp_packet *packet, int code) FAST_FUNC;
 int udhcp_end_option(uint8_t *optionptr) FAST_FUNC;
 void udhcp_add_binary_option(struct dhcp_packet *packet, uint8_t *addopt) FAST_FUNC;

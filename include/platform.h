@@ -6,15 +6,18 @@
  */
 #ifndef BB_PLATFORM_H
 #define BB_PLATFORM_H 1
-
+#include <sys/cdefs.h>
 
 /* Convenience macros to test the version of gcc. */
-#undef __GNUC_PREREQ
 #if defined __GNUC__ && defined __GNUC_MINOR__
-# define __GNUC_PREREQ(maj, min) \
+# ifndef __GNUC_PREREQ
+#  define __GNUC_PREREQ(maj, min) \
 		((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+# endif
 #else
+# ifndef __GNUC_PREREQ
 # define __GNUC_PREREQ(maj, min) 0
+# endif
 #endif
 
 /* __restrict is known in EGCS 1.2 and above. */
