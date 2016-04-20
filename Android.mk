@@ -7,55 +7,30 @@ BB_PATH := $(LOCAL_PATH)
 
 LOCAL_PATH := $(BB_PATH)
 include $(CLEAR_VARS)
+BB_VER := 1.25.0-android
 
 BUSYBOX_CROSS_COMPILER_PREFIX := $(abspath $(TARGET_TOOLS_PREFIX))
 
 # On aosp (master), path is relative, not on cm (kitkat)
 bb_gen := $(abspath $(TARGET_OUT_INTERMEDIATES)/busybox)
 
-busybox_prepare_full := $(bb_gen)/full/.config
-$(busybox_prepare_full): $(BB_PATH)/busybox-full.config
-	@echo -e ${CL_YLW}"Prepare config for busybox binary"${CL_RST}
-	@rm -rf $(bb_gen)/full
-	@rm -f $(shell find $(abspath $(call intermediates-dir-for,EXECUTABLES,busybox)) -name "*.o")
-	@mkdir -p $(@D)
-	@cat $^ > $@ && echo "CONFIG_CROSS_COMPILER_PREFIX=\"$(BUSYBOX_CROSS_COMPILER_PREFIX)\"" >> $@
-	+make -C $(BB_PATH) prepare O=$(@D)
-
-#####################################################################
-
 LOCAL_PATH := $(BB_PATH)
 include $(CLEAR_VARS)
 
 KERNEL_MODULES_DIR ?= /system/lib/modules
 
-SUBMAKE := make -s -C $(BB_PATH) CC=$(CC)
-
-BUSYBOX_SRC_FILES = \
-# 	$(shell cat $(BB_PATH)/android.sources) \
-	android/libc/mktemp.c \
-	android/libc/pty.c \
-	android/android.c
-
-BUSYBOX_ASM_FILES =
-ifneq ($(BIONIC_L),true)
-    BUSYBOX_ASM_FILES += swapon.S swapoff.S sysinfo.S
-endif
-
-ifneq ($(filter arm x86 mips,$(TARGET_ARCH)),)
-    BUSYBOX_SRC_FILES += \
-        $(addprefix android/libc/arch-$(TARGET_ARCH)/syscalls/,$(BUSYBOX_ASM_FILES))
-endif
+BUSYBOX_SRC_FILES = $(shell cat $(BB_PATH)/android/android.sources)
 
 BUSYBOX_C_INCLUDES = \
 	$(BB_PATH)/include $(BB_PATH)/libbb \
+	$(BB_PATH)/android/include \
 	bionic/libc/private \
 	bionic/libm/include \
 	bionic/libc \
 	bionic/libm \
-	libc/kernel/common \
 	external/libselinux/include \
 	external/selinux/libsepol/include \
+	bionic/libc/kernel/uapi
 
 BUSYBOX_CFLAGS = \
 	-Werror=implicit -Wno-clobbered \
@@ -63,40 +38,15 @@ BUSYBOX_CFLAGS = \
 	-DANDROID \
 	-fno-strict-aliasing \
 	-fno-builtin-stpcpy \
-	-include $(bb_gen)/$(BUSYBOX_CONFIG)/include/autoconf.h \
+	-include $(BB_PATH)/include/autoconf.h \
 	-D'CONFIG_DEFAULT_MODULES_DIR="$(KERNEL_MODULES_DIR)"' \
-	-D'BB_VER="$(strip $(shell $(SUBMAKE) kernelversion)) $(BUSYBOX_SUFFIX)"' -DBB_BT=AUTOCONF_TIMESTAMP
-
-
-# Build the static lib for the recovery tool
-
-BUSYBOX_CONFIG:=minimal
-BUSYBOX_SUFFIX:=static
-LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
-LOCAL_C_INCLUDES := $(bb_gen)/minimal/include $(BUSYBOX_C_INCLUDES)
-LOCAL_CFLAGS := -Dmain=busybox_driver $(BUSYBOX_CFLAGS)
-LOCAL_CFLAGS += \
-  -DRECOVERY_VERSION \
-  -Dgetusershell=busybox_getusershell \
-  -Dsetusershell=busybox_setusershell \
-  -Dendusershell=busybox_endusershell \
-  -Dgetmntent=busybox_getmntent \
-  -Dgetmntent_r=busybox_getmntent_r \
-  -Dgenerate_uuid=busybox_generate_uuid
-LOCAL_ASFLAGS := $(BUSYBOX_AFLAGS)
-LOCAL_MODULE := libbusybox
-LOCAL_MODULE_TAGS := eng debug
-LOCAL_STATIC_LIBRARIES := libcutils libc libm libselinux
-LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_minimal)
-include $(BUILD_STATIC_LIBRARY)
-
+	-D'BB_VER="$(BB_VER)"' -DBB_BT=AUTOCONF_TIMESTAMP
 
 # Bionic Busybox /system/xbin
 
 LOCAL_PATH := $(BB_PATH)
 include $(CLEAR_VARS)
 
-BUSYBOX_CONFIG:=full
 BUSYBOX_SUFFIX:=bionic
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
 LOCAL_C_INCLUDES := $(bb_gen)/full/include $(BUSYBOX_C_INCLUDES)
