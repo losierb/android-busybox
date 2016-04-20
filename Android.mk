@@ -1,21 +1,14 @@
 LOCAL_PATH := $(call my-dir)
 BB_PATH := $(LOCAL_PATH)
 
-#####################################################################
-
-# Execute make prepare for normal config & static lib (recovery)
 
 LOCAL_PATH := $(BB_PATH)
 include $(CLEAR_VARS)
-BB_VER := 1.25.0-android
 
-BUSYBOX_CROSS_COMPILER_PREFIX := $(abspath $(TARGET_TOOLS_PREFIX))
+BB_VER := 1.25.0-bionic
 
 # On aosp (master), path is relative, not on cm (kitkat)
 bb_gen := $(abspath $(TARGET_OUT_INTERMEDIATES)/busybox)
-
-LOCAL_PATH := $(BB_PATH)
-include $(CLEAR_VARS)
 
 KERNEL_MODULES_DIR ?= /system/lib/modules
 
@@ -44,26 +37,21 @@ BUSYBOX_CFLAGS = \
 
 # Bionic Busybox /system/xbin
 
-LOCAL_PATH := $(BB_PATH)
-include $(CLEAR_VARS)
-
-BUSYBOX_SUFFIX:=bionic
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
-LOCAL_C_INCLUDES := $(bb_gen)/full/include $(BUSYBOX_C_INCLUDES)
+LOCAL_C_INCLUDES := $(BUSYBOX_C_INCLUDES)
 LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
 LOCAL_ASFLAGS := $(BUSYBOX_AFLAGS)
 LOCAL_MODULE := busybox
 LOCAL_MODULE_TAGS := eng debug
 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
 LOCAL_SHARED_LIBRARIES := libc libcutils libm
-LOCAL_STATIC_LIBRARIES := libclearsilverregex libuclibcrpc libselinux
 LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_full)
 LOCAL_CLANG := false
 include $(BUILD_EXECUTABLE)
 
 ifeq ($(WITH_BUSYBOX_LINKS),true)
 
-BUSYBOX_LINKS := $(shell cat $(BB_PATH)/busybox-$(BUSYBOX_CONFIG).links)
+BUSYBOX_LINKS := $(shell cat $(BB_PATH)/android/android.links)
 # nc is provided by external/netcat
 exclude := nc
 SYMLINKS := $(addprefix $(TARGET_OUT_OPTIONAL_EXECUTABLES)/,$(filter-out $(exclude),$(notdir $(BUSYBOX_LINKS))))
