@@ -16,6 +16,8 @@
 //usage:     "\n	-V	Verify file context on disk matches defaults"
 
 #include "libbb.h"
+#include "android_selinux.h"
+#include "android_selinux_internal.h"
 
 static int print_matchpathcon(char *path, int noprint)
 {

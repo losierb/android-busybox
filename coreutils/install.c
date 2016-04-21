@@ -26,6 +26,7 @@
 
 #include "libbb.h"
 #include "libcoreutils/coreutils.h"
+#include "android_selinux.h"
 
 #if ENABLE_FEATURE_INSTALL_LONG_OPTIONS
 static const char install_longopts[] ALIGN1 =

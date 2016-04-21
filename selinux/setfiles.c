@@ -46,6 +46,9 @@
 //usage:     "\n		if it has changed"
 
 #include "libbb.h"
+#include "android_selinux.h"
+#include "android_selinux_internal.h"
+
 #if ENABLE_FEATURE_SETFILES_CHECK_OPTION
 #include <sepol/sepol.h>
 #endif

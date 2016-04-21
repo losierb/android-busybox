@@ -22,7 +22,7 @@ BUSYBOX_C_INCLUDES = \
 	bionic/libm/include \
 	bionic/libc/include \
 	bionic/libm/include \
-	external/selinux/libselinux/include \
+	external/libselinux/include \
 	external/selinux/libsepol/include \
 
 BUSYBOX_CFLAGS = \
@@ -50,8 +50,6 @@ LOCAL_STATIC_LIBRARIES := libsepol
 LOCAL_CLANG := false
 include $(BUILD_EXECUTABLE)
 
-ifeq ($(WITH_BUSYBOX_LINKS),true)
-
 BUSYBOX_LINKS := $(shell cat $(BB_PATH)/android/android.links)
 # nc is provided by external/netcat
 exclude := nc
@@ -69,5 +67,3 @@ ALL_DEFAULT_INSTALLED_MODULES += $(SYMLINKS)
 # local module name
 ALL_MODULES.$(LOCAL_MODULE).INSTALLED := \
     $(ALL_MODULES.$(LOCAL_MODULE).INSTALLED) $(SYMLINKS)
-
-endif

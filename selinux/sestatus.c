@@ -15,6 +15,8 @@
 //usage:     "\n	-b	Display current state of booleans"
 
 #include "libbb.h"
+#include "android_selinux.h"
+#include "android_selinux_internal.h"
 
 extern char *selinux_mnt;
 

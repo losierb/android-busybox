@@ -36,6 +36,12 @@
 #  include <arpa/nameser.h>
 #  include <dns/include/resolv_private.h>
 #  include <dns/resolv/res_private.h>
+
+static struct __res_state res_st;
+struct __res_state *__res_state(void)
+{
+	return &res_st;
+}
 #endif
 #define EXT(res) ((&res)->_u._ext)
 

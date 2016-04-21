@@ -141,6 +141,8 @@ findutils/xargs.c
 init/halt.c
 init/mesg.c
 libbb/android.c
+libbb/matchpathcon.c
+libbb/stubs.c
 libbb/appletlib.c
 libbb/ask_confirmation.c
 libbb/auto_string.c

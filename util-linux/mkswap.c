@@ -13,6 +13,8 @@
 //usage:     "\n	-L LBL	Label"
 
 #include "libbb.h"
+#include "android_selinux.h"
+#include "android_selinux_internal.h"
 
 #if ENABLE_SELINUX
 static void mkswap_selinux_setcontext(int fd, const char *path)

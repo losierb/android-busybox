@@ -32,13 +32,13 @@ static int FAST_FUNC read_staticlease(const char *const_line, void *arg)
 	char *line;
 	char *mac_string;
 	char *ip_string;
-	struct ether_addr mac_bytes; /* it's "struct { uint8_t mac[6]; }" */
+	struct ether_addr *mac_bytes; /* it's "struct { uint8_t mac[6]; }" */
 	uint32_t nip;
 
 	/* Read mac */
 	line = (char *) const_line;
 	mac_string = strtok_r(line, " \t", &line);
-	if (!mac_string || !ether_aton_r(mac_string, &mac_bytes))
+	if (!mac_string || !(mac_bytes = ether_aton(mac_string)))
 		return 0;
 
 	/* Read ip */
@@ -46,7 +46,7 @@ static int FAST_FUNC read_staticlease(const char *const_line, void *arg)
 	if (!ip_string || !udhcp_str2nip(ip_string, &nip))
 		return 0;
 
-	add_static_lease(arg, (uint8_t*) &mac_bytes, nip);
+	add_static_lease(arg, (uint8_t*) mac_bytes, nip);
 
 	log_static_leases(arg);
 

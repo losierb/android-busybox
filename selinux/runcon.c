@@ -51,9 +51,9 @@
 //usage:	)
 
 #include <selinux/context.h>
-#include <selinux/flask.h>
-
 #include "libbb.h"
+#include "android_selinux.h"
+#include "android_selinux_internal.h"
 
 static context_t runcon_compute_new_context(char *user, char *role, char *type, char *range,
 			char *command, int compute_trans)

@@ -9,6 +9,8 @@
 //usage:#define load_policy_full_usage ""
 
 #include "libbb.h"
+#include "android_selinux.h"
+#include "android_selinux_internal.h"
 
 int load_policy_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int load_policy_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
@@ -19,7 +21,7 @@ int load_policy_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 		bb_show_usage();
 	}
 
-	rc = selinux_mkload_policy(1);
+	rc = selinux_android_load_policy();
 	if (rc < 0) {
 		bb_perror_msg_and_die("can't load policy");
 	}
